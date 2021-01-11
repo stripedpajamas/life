@@ -1,7 +1,7 @@
 const gameDiv = document.getElementById('life')
 
-function flipCoin () {
-  return Math.random() > .5
+function flipCoin (weight) {
+  return Math.random() > weight
 }
 
 function createBoard (rows, columns) {
@@ -14,13 +14,12 @@ function createBoard (rows, columns) {
       el.setAttribute('id', `node-${key}`)
       el.classList.add('node')
 
-      if (flipCoin()) el.classList.add('alive')
+      if (flipCoin(0.8)) el.classList.add('alive')
       gameDiv.appendChild(el)
 
       elements.set(key, el)
     }
   }
-
 
   return {
     elements,
@@ -96,9 +95,8 @@ function play (board) {
       state[r][c] = 1
     }
   }
-  console.log(state)
 
-  // // TODO manually adjust speed
+  // TODO manually adjust speed
   const gameInterval = setInterval(() => {
     computeNextState(state, next) // mutates next
 
@@ -111,6 +109,10 @@ function play (board) {
   }, 1000)
 }
 
-const board = createBoard(40, 40)
+let htmlStyles = window.getComputedStyle(document.querySelector('html'))
+let rowCount = parseInt(htmlStyles.getPropertyValue('--rowCount'), 10)
+let colCount = parseInt(htmlStyles.getPropertyValue('--colCount'), 10)
+
+const board = createBoard(rowCount, colCount)
 play(board)
 
