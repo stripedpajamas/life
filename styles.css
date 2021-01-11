@@ -1,0 +1,58 @@
+html, body, div {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	line-height: 1;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+#container {
+	height: 100%;
+	display: grid;
+	justify-content: center;
+	align-content: center;
+}
+
+#life {
+	border: 1px solid black;
+	display: grid;
+	grid-template-rows: repeat(4, 50px);
+	grid-template-columns: repeat(4, 50px);
+}
+
+.node {
+	border: 1px solid black;
+}
+
+.alive {
+	background-color: black;
+}
