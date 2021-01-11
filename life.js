@@ -4,45 +4,113 @@ function flipCoin () {
   return Math.random() > .5
 }
 
-function createBoard (size) {
-  const board = []
+function createBoard (rows, columns) {
+  const elements = new Map()
 
-  for (let i = 0; i < size; i++) {
-    const el = document.createElement('div')
-    el.setAttribute('id', `node-${i}`)
-    el.classList.add('node')
-    if (flipCoin()) el.classList.add('alive')
-    gameDiv.appendChild(el)
-    board.push(el)
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+      const el = document.createElement('div')
+      const key = `${r}-${c}`
+      el.setAttribute('id', `node-${key}`)
+      el.classList.add('node')
+
+      if (flipCoin()) el.classList.add('alive')
+      gameDiv.appendChild(el)
+
+      elements.set(key, el)
+    }
   }
 
-  return board
+
+  return {
+    elements,
+    rows,
+    columns
+  }
 }
 
+function getLiveNeighborCount (state, row, col) {
+  const rows = state.length
+  const cols = state[state.length - 1].length
+
+  return 0 +
+    state[(row - 1 + rows) % rows][(col - 1 + cols) % cols] +
+    state[(row - 1 + rows) % rows][col] +
+    state[(row - 1 + rows) % rows][(col + 1) % cols] +
+    state[row][(col - 1 + cols) % cols] +
+    state[row][(col + 1) % cols] +
+    state[(row + 1) % rows][(col - 1 + cols) % cols] +
+    state[(row + 1) % rows][col] +
+    state[(row + 1) % rows][(col + 1) % cols]
+}
 
 function computeNextState (state, next) {
+  for (let r = 0; r < state.length; r++) {
+    for (let c = 0; c < state[r].length; c++) {
+      const current = state[r][c]
+      const alive = !!current
+
+      const neighbors = getLiveNeighborCount(state, r, c)
+
+      if (alive) {
+        if (neighbors < 2) {
+          next[r][c] = 0
+        } else if (neighbors === 2 || neighbors === 3) {
+          next[r][c] = 1
+        } else if (neighbors > 3) {
+          next[r][c] = 0
+        }
+      } else {
+        if (neighbors === 3) {
+          next[r][c] = 1
+        }
+      }
+    }
+  }
+}
+
+function updateBoard (board, state) {
+  for (let r = 0; r < state.length; r++) {
+    for (let c = 0; c < state[r].length; c++) {
+      const key = `${r}-${c}`
+      const el = board.elements.get(key)
+      if (state[r][c]) {
+        el.classList.add('alive')
+      } else {
+        el.classList.remove('alive')
+      }
+    }
+  }
 }
 
 function play (board) {
-  const state = new Array(board.length).fill(0)
-  const next = new Array(board.length).fill(0)
+  const { rows, columns, elements } = board
 
-  board.forEach((el, idx) => {
-    if (el.classList.has('alive')) {
-      state[idx] = 1
+  let state = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
+  let next = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
+
+  // prime state from the random bs during board creation
+  for (const [key, el] of elements.entries()) {
+    if (el.classList.contains('alive')) {
+      const [r, c] = key.split('-')
+      state[r][c] = 1
     }
-  })
+  }
+  console.log(state)
 
-  // TODO manually adjust speed
+  // // TODO manually adjust speed
   const gameInterval = setInterval(() => {
-    computeNextState(state, next)
+    computeNextState(state, next) // mutates next
 
-    for (const alive of next) {
-    }
+    // swap state and next
+    let tmp = state
+    state = next
+    next = state
 
-  }, 2000)
+    updateBoard(board, state)
+  }, 1000)
 }
 
-const board = createBoard(16)
+const board = createBoard(40, 40)
 play(board)
 
