@@ -6,6 +6,8 @@ function flipCoin (weight) {
 
 function createBoard (rows, columns) {
   const elements = new Map()
+  gameDiv.style.gridTemplateColumns = `repeat(${columns}, 10px)`
+  gameDiv.style.gridTemplateRows = `repeat(${rows}, 10px)`
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
@@ -106,12 +108,11 @@ function play (board) {
     next = state
 
     updateBoard(board, state)
-  }, 1000)
+  }, 100)
 }
 
-let htmlStyles = window.getComputedStyle(document.querySelector('html'))
-let rowCount = parseInt(htmlStyles.getPropertyValue('--rowCount'), 10)
-let colCount = parseInt(htmlStyles.getPropertyValue('--colCount'), 10)
+let rowCount = Math.floor((window.innerHeight - 20) / 10)
+let colCount = Math.floor((window.innerWidth - 20) / 10)
 
 const board = createBoard(rowCount, colCount)
 play(board)

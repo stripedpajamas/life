@@ -34,12 +34,6 @@ table {
 	border-spacing: 0;
 }
 
-:root {
-	--rowCount: 40;
-	--colCount: 40;
-	--nodeSize: calc(min((100vh / var(--rowCount)), 100vw / var(--colCount)) - 1px);
-}
-
 #container {
 	height: 100%;
 	display: grid;
@@ -50,8 +44,6 @@ table {
 #life {
 	border: 1px solid black;
 	display: grid;
-	grid-template-rows: repeat(var(--rowCount), var(--nodeSize));
-	grid-template-columns: repeat(var(--colCount), var(--nodeSize));
 }
 
 .node {
