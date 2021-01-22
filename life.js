@@ -98,8 +98,7 @@ function play (board) {
     }
   }
 
-  // TODO manually adjust speed
-  const gameInterval = setInterval(() => {
+  function game () {
     computeNextState(state, next) // mutates next
 
     // swap state and next
@@ -108,7 +107,22 @@ function play (board) {
     next = state
 
     updateBoard(board, state)
-  }, 100)
+  }
+
+  // TODO manually adjust speed
+  let gameInterval
+
+  // pause with spacebar
+  document.addEventListener('keydown', (key) => {
+    if (key.code === 'Space') {
+      if (gameInterval) {
+        clearInterval(gameInterval)
+        gameInterval = null
+      } else {
+        gameInterval = setInterval(game, 100)
+      }
+    }
+  });
 }
 
 let rowCount = Math.floor((window.innerHeight - 20) / 10)
