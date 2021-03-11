@@ -16,18 +16,13 @@ function createBoard (rows, columns) {
       el.setAttribute('id', `node-${key}`)
       el.classList.add('node')
 
-      if (flipCoin(0.8)) el.classList.add('alive')
       gameDiv.appendChild(el)
 
       elements.set(key, el)
     }
   }
 
-  return {
-    elements,
-    rows,
-    columns
-  }
+  return { elements, rows, columns }
 }
 
 function getLiveNeighborCount (state, row, col) {
@@ -90,11 +85,23 @@ function play (board) {
   let state = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
   let next = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
 
-  // prime state from the random bs during board creation
-  for (const [key, el] of elements.entries()) {
-    if (el.classList.contains('alive')) {
-      const [r, c] = key.split('-')
-      state[r][c] = 1
+  // init with random
+  randomState(state, 0.8)
+  updateBoard(board, state)
+
+  function clearState (state) {
+    for (let r = 0; r < state.length; r++) {
+      for (let c = 0; c < state[r].length; c++) {
+        state[r][c] = 0
+      }
+    }
+  }
+
+  function randomState (state, weight) {
+    for (let r = 0; r < state.length; r++) {
+      for (let c = 0; c < state[r].length; c++) {
+        if (flipCoin(weight)) state[r][c] = 1
+      }
     }
   }
 
@@ -109,18 +116,50 @@ function play (board) {
     updateBoard(board, state)
   }
 
-  // TODO manually adjust speed
   let gameInterval
+
+  function playPause () {
+    if (gameInterval) {
+      stop()
+    } else {
+      start()
+    }
+  }
+
+  function start () {
+    if (!gameInterval) {
+      // TODO manually adjust speed
+      gameInterval = setInterval(game, 100)
+    }
+  }
+
+  function stop () {
+    if (gameInterval) {
+      clearInterval(gameInterval)
+      gameInterval = null
+    }
+  }
 
   // pause with spacebar
   document.addEventListener('keydown', (key) => {
-    if (key.code === 'Space') {
-      if (gameInterval) {
-        clearInterval(gameInterval)
-        gameInterval = null
-      } else {
-        gameInterval = setInterval(game, 100)
+    switch (key.code) {
+      case 'Space': {
+        playPause()
+        break
       }
+      case 'KeyC': {
+        stop()
+        clearState(state)
+        updateBoard(board, state)
+        break
+      }
+      case 'KeyR': {
+        if (key.metaKey || key.ctrlKey) return
+        randomState(state, 0.8)
+        updateBoard(board, state)
+        break
+      }
+      default: {}
     }
   });
 }
