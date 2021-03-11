@@ -13,6 +13,12 @@ window.addEventListener('click', (e) => {
   }
 })
 
+function isTouchScreen() { 
+	return ('ontouchstart' in window) || 
+		(navigator.maxTouchPoints > 0) || 
+		(navigator.msMaxTouchPoints > 0) 
+}
+
 function hideHelp () {
   helpModal.style.display = 'none'
   helpOpen = false
@@ -113,14 +119,17 @@ function play (board) {
 
   let state = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
   let next = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
+  let gameInterval
+  let grid = true
 
   // init with random
   randomState(0.8)
   updateBoard(board, state)
   addClickHandlers(board, flip)
 
-  let gameInterval
-  let grid = true
+  if (isTouchScreen()) { // no keyboard shortcuts for phones etc
+    start()
+  }
 
   function set (row, col, val, update = true) {
     state[row][col] = val
