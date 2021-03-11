@@ -3,13 +3,70 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Life</title>
+		<title>Life (press ? for help)</title>
 		<link rel="stylesheet" type="text/css" href="./styles.css">
 	</head>
 	<body>
 		<div id="container">
 			<div id="life">
 			</div>
+		</div>
+		<div id="help" class="modal">
+			<div class="modal-content">
+				<h1>Game of Life</h1>
+				<div>
+					<div>
+						<ul>
+							<li>
+								<h3>Play/pause</h3>
+								<div class="keyboard-shortcut">
+									<span>Space</span>
+								</div>
+							</li>
+							<li>
+								<h3>Clear board</h3>
+								<div class="keyboard-shortcut">
+									<span>C</span>
+								</div>
+							</li>
+							<li>
+								<h3>Randomize board</h3>
+								<div class="keyboard-shortcut">
+									<span>R</span>
+								</div>
+							</li>
+							<li>
+								<h3>Show help</h3>
+								<div class="keyboard-shortcut">
+									<span>?</span>
+								</div>
+							</li>
+							<li>
+								<h3>Hide help</h3>
+								<div class="keyboard-shortcut">
+									<span>Esc</span>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="help-text">
+						<p>
+							Click on individual cells to toggle their state
+						</p>
+						<p>
+							<a href="https://en.wikipedia.org/wiki/Conway's_Game_of_Life" rel="noopener noreferrer" target="_blank">
+								More about the game of life on Wikipedia
+							</a>
+						</p>
+						<p>
+							<a href="https://github.com/stripedpajamas/life" rel="noopener noreferrer" target="_blank">
+								Website source code on GitHub
+							</a>
+						</p>
+					</div>
+				</div>
+			</div>
+
 		</div>
 		<script src="./life.js"></script>
 	</body>

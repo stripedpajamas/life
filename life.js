@@ -1,4 +1,22 @@
 const gameDiv = document.getElementById('life')
+const helpModal = document.getElementById('help')
+
+let helpOpen = false
+function showHelp () {
+  helpModal.style.display = 'block'
+  helpOpen = true
+}
+
+window.addEventListener('click', (e) => {
+  if (e.target == helpModal) {
+    helpModal.style.display = 'none'
+  }
+})
+
+function hideHelp () {
+  helpModal.style.display = 'none'
+  helpOpen = false
+}
 
 function flipCoin (weight) {
   return Math.random() > weight
@@ -159,6 +177,9 @@ function play (board) {
 
   function start () {
     if (!gameInterval) {
+      if (!document.title.includes('▶')) {
+        document.title = '▶ ' + document.title
+      }
       // TODO manually adjust speed
       gameInterval = setInterval(game, 100)
     }
@@ -166,25 +187,27 @@ function play (board) {
 
   function stop () {
     if (gameInterval) {
+      if (document.title.includes('▶')) {
+        document.title = document.title.slice(2)
+      }
       clearInterval(gameInterval)
       gameInterval = null
     }
   }
 
-  // pause with spacebar
   document.addEventListener('keydown', (key) => {
-    switch (key.code) {
-      case 'Space': {
+    switch (key.key) { // pause with spacebar
+      case ' ': {
         playPause()
         break
       }
-      case 'KeyC': {
+      case 'c': { // clear screen
         stop()
         clearState()
         updateBoard(board, state)
         break
       }
-      case 'KeyR': {
+      case 'r': { // random state
         if (key.metaKey || key.ctrlKey) return
         randomState(0.8)
         updateBoard(board, state)
@@ -201,3 +224,16 @@ let colCount = Math.floor((window.innerWidth - 20) / 10)
 const board = createBoard(rowCount, colCount)
 play(board)
 
+document.addEventListener('keydown', (key) => {
+  console.log(key)
+  switch (key.key) {
+    case '?': {
+      showHelp()
+      break
+    }
+    case 'Escape': {
+      hideHelp()
+      break
+    }
+  }
+})
