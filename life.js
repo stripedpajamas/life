@@ -30,12 +30,12 @@ function getLiveNeighborCount (state, row, col) {
   const cols = state[state.length - 1].length
 
   return 0 +
-    state[(row - 1 + rows) % rows][(col - 1 + cols) % cols] +
-    state[(row - 1 + rows) % rows][col] +
-    state[(row - 1 + rows) % rows][(col + 1) % cols] +
-    state[row][(col - 1 + cols) % cols] +
+    state[((row - 1) + rows) % rows][((col - 1) + cols) % cols] +
+    state[((row - 1) + rows) % rows][col] +
+    state[((row - 1) + rows) % rows][(col + 1) % cols] +
+    state[row][((col - 1) + cols) % cols] +
     state[row][(col + 1) % cols] +
-    state[(row + 1) % rows][(col - 1 + cols) % cols] +
+    state[(row + 1) % rows][((col - 1) + cols) % cols] +
     state[(row + 1) % rows][col] +
     state[(row + 1) % rows][(col + 1) % cols]
 }
@@ -43,17 +43,17 @@ function getLiveNeighborCount (state, row, col) {
 function computeNextState (state, next) {
   for (let r = 0; r < state.length; r++) {
     for (let c = 0; c < state[r].length; c++) {
+      next[r][c] = 0
+
       const current = state[r][c]
       const alive = !!current
 
       const neighbors = getLiveNeighborCount(state, r, c)
 
       if (alive) {
-        if (neighbors < 2) {
-          next[r][c] = 0
-        } else if (neighbors === 2 || neighbors === 3) {
+        if (neighbors === 2 || neighbors === 3) {
           next[r][c] = 1
-        } else if (neighbors > 3) {
+        } else {
           next[r][c] = 0
         }
       } else {
@@ -79,6 +79,17 @@ function updateBoard (board, state) {
   }
 }
 
+function addClickHandlers (board, flipFunc) {
+  const { rows, columns, elements } = board
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+      const key = `${r}-${c}`
+      const el = board.elements.get(key)
+      el.addEventListener('click', () => flipFunc(r, c))
+    }
+  }
+}
+
 function play (board) {
   const { rows, columns, elements } = board
 
@@ -86,32 +97,52 @@ function play (board) {
   let next = new Array(rows).fill(0).map(_ => new Array(columns).fill(0))
 
   // init with random
-  randomState(state, 0.8)
+  randomState(0.8)
   updateBoard(board, state)
+  addClickHandlers(board, flip)
 
-  function clearState (state) {
+  function set (row, col, val, update = true) {
+    state[row][col] = val
+    if (update) updateBoard(board, state)
+  }
+
+  function get (row, col) {
+    return state[row][col]
+  }
+
+  function flip (row, col) {
+    set(row, col, Number(!get(row, col)))
+  }
+
+  function clearState () {
     for (let r = 0; r < state.length; r++) {
       for (let c = 0; c < state[r].length; c++) {
-        state[r][c] = 0
+        set(r, c, 0, false)
       }
     }
   }
 
-  function randomState (state, weight) {
+  function randomState (weight) {
     for (let r = 0; r < state.length; r++) {
       for (let c = 0; c < state[r].length; c++) {
-        if (flipCoin(weight)) state[r][c] = 1
+        if (flipCoin(weight)) {
+          set(r, c, 1, false)
+        }
+      }
+    }
+  }
+
+  function copy(src, dst) {
+    for (let r = 0; r < src.length; r++) {
+      for (let c = 0; c < src[src.length - 1].length; c++) {
+        dst[r][c] = src[r][c]
       }
     }
   }
 
   function game () {
-    computeNextState(state, next) // mutates next
-
-    // swap state and next
-    let tmp = state
-    state = next
-    next = state
+    computeNextState(state, next)
+    copy(next, state)
 
     updateBoard(board, state)
   }
@@ -149,13 +180,13 @@ function play (board) {
       }
       case 'KeyC': {
         stop()
-        clearState(state)
+        clearState()
         updateBoard(board, state)
         break
       }
       case 'KeyR': {
         if (key.metaKey || key.ctrlKey) return
-        randomState(state, 0.8)
+        randomState(0.8)
         updateBoard(board, state)
         break
       }
