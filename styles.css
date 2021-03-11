@@ -72,13 +72,17 @@ a:active {
 	align-content: center;
 }
 
-#life {
+.game {
 	border: 1px solid black;
 	display: grid;
 }
 
 .node {
 	border: 1px solid black;
+}
+
+.noborders {
+	border: none;
 }
 
 .alive {

@@ -119,6 +119,9 @@ function play (board) {
   updateBoard(board, state)
   addClickHandlers(board, flip)
 
+  let gameInterval
+  let grid = true
+
   function set (row, col, val, update = true) {
     state[row][col] = val
     if (update) updateBoard(board, state)
@@ -130,6 +133,14 @@ function play (board) {
 
   function flip (row, col) {
     set(row, col, Number(!get(row, col)))
+  }
+
+  function toggleGrid () {
+    for (const el of elements.values()) {
+      el.classList[grid ? 'add' : 'remove']('noborders')
+    }
+    gameDiv.classList[grid ? 'add' : 'remove']('noborders')
+    grid = !grid
   }
 
   function clearState () {
@@ -164,8 +175,6 @@ function play (board) {
 
     updateBoard(board, state)
   }
-
-  let gameInterval
 
   function playPause () {
     if (gameInterval) {
@@ -213,6 +222,10 @@ function play (board) {
         updateBoard(board, state)
         break
       }
+      case 'g': { // toggle grid
+        toggleGrid()
+        break
+      }
       default: {}
     }
   });
@@ -225,7 +238,6 @@ const board = createBoard(rowCount, colCount)
 play(board)
 
 document.addEventListener('keydown', (key) => {
-  console.log(key)
   switch (key.key) {
     case '?': {
       showHelp()
