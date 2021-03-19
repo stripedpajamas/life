@@ -89,16 +89,20 @@ function computeNextState (state, next) {
   }
 }
 
+function updateElement (el, alive) {
+  if (alive) {
+    el.classList.add('alive')
+  } else {
+    el.classList.remove('alive')
+  }
+}
+
 function updateBoard (board, state) {
   for (let r = 0; r < state.length; r++) {
     for (let c = 0; c < state[r].length; c++) {
       const key = `${r}-${c}`
       const el = board.elements.get(key)
-      if (state[r][c]) {
-        el.classList.add('alive')
-      } else {
-        el.classList.remove('alive')
-      }
+      updateElement(el, state[r][c])
     }
   }
 }
@@ -151,8 +155,9 @@ function play (board) {
     start()
   }
 
-  function set (row, col, val, update = true) {
+  function set (row, col, val, update = false) {
     state[row][col] = val
+    updateElement(elements.get(`${row}-${col}`), val)
     if (update) updateBoard(board, state)
   }
 
