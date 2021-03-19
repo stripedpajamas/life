@@ -103,13 +103,19 @@ function updateBoard (board, state) {
   }
 }
 
-function addClickHandlers (board, flipFunc) {
-  const { rows, columns, elements } = board
+function addClickHandlers (board, funcs) {
+  const { rows, columns } = board
+  const { flip, set, isMouseDown } = funcs
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
       const key = `${r}-${c}`
       const el = board.elements.get(key)
-      el.addEventListener('click', () => flipFunc(r, c))
+      el.addEventListener('click', () => flip(r, c))
+      el.addEventListener('mouseover', () => {
+        if (isMouseDown()) {
+          set(r, c, 1)
+        }
+      })
     }
   }
 }
@@ -122,10 +128,24 @@ function play (board) {
   let gameInterval
   let grid = true
 
+  let mouseDown = false
+  document.addEventListener('mousedown', () => {
+    mouseDown = true
+  })
+  document.addEventListener('mouseup', () => {
+    mouseDown = false
+  })
+
+  let isMouseDown = () => mouseDown
+
   // init with random
   randomState(0.8)
   updateBoard(board, state)
-  addClickHandlers(board, flip)
+  addClickHandlers(board, {
+    flip,
+    set,
+    isMouseDown
+  })
 
   if (isTouchScreen()) { // no keyboard shortcuts for phones etc
     start()
