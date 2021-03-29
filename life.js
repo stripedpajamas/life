@@ -98,13 +98,18 @@ function updateElement (el, alive) {
 }
 
 function updateBoard (board, state) {
+	let totalAlive = 0
   for (let r = 0; r < state.length; r++) {
     for (let c = 0; c < state[r].length; c++) {
       const key = `${r}-${c}`
       const el = board.elements.get(key)
       updateElement(el, state[r][c])
+
+			totalAlive += state[r][c]
     }
   }
+
+	return totalAlive
 }
 
 function addClickHandlers (board, funcs) {
@@ -207,7 +212,8 @@ function play (board) {
     computeNextState(state, next)
     copy(next, state)
 
-    updateBoard(board, state)
+    const totalAlive = updateBoard(board, state)
+		if (!totalAlive) stop()
   }
 
   function playPause () {
